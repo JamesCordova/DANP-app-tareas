@@ -14,14 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.aero.apptareas.ui.theme.AppTareasTheme
 
-@Composable
-fun TituloApp() {
-    Text(
-        text = "Gestor de Tareas",
-        style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.colorScheme.primary
-    )
-}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
