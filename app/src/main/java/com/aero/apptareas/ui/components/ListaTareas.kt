@@ -9,14 +9,16 @@ import com.aero.apptareas.data.model.Tarea
 fun ListaTareas(
     tareas: List<Tarea>,
     onToggle: (Tarea) -> Unit = {},
-    onDelete: (Tarea) -> Unit = {}
+    onDelete: (Tarea) -> Unit = {},
+    onEdit: (Tarea) -> Unit = {}
 ) {
     LazyColumn {
         items(tareas) { tarea ->
             ItemTarea(
                 tarea = tarea,
                 onToggle = { onToggle(tarea) },
-                onDelete = { onDelete(tarea) }
+                onDelete = { onDelete(tarea) },
+                onEdit = { onEdit(tarea) }
             )
         }
     }
