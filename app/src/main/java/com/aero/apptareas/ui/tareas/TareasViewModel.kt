@@ -13,6 +13,12 @@ class TareasViewModel : ViewModel() {
     var texto by mutableStateOf("")
         private set
 
+    var tareaEnEdicion by mutableStateOf<Tarea?>(null)
+        private set
+
+    var textoEdicion by mutableStateOf("")
+        private set
+
     private var contadorId = 0
 
     fun onTextoChange(nuevoTexto: String) {
@@ -43,6 +49,34 @@ class TareasViewModel : ViewModel() {
 
     fun eliminarTarea(tarea: Tarea) {
         tareas = tareas.filter { itTarea: Tarea ->
-            itTarea.id != tarea.id }
+            itTarea.id != tarea.id
+        }
+    }
+
+    fun abrirEdicionTarea(tarea: Tarea) {
+        tareaEnEdicion = tarea
+        textoEdicion = tarea.titulo
+    }
+
+    fun cerrarEdicionTarea() {
+        tareaEnEdicion = null
+        textoEdicion = ""
+    }
+
+    fun onTextoEdicionChange(nuevoTexto: String) {
+        textoEdicion = nuevoTexto
+    }
+
+    fun guardarEdicionTarea(nuevoTitulo: String) {
+        tareaEnEdicion?.let { tarea ->
+            tareas = tareas.map { itTarea: Tarea ->
+                if (itTarea.id == tarea.id) {
+                    itTarea.copy(titulo = nuevoTitulo)
+                } else {
+                    itTarea
+                }
+            }
+            cerrarEdicionTarea()
+        }
     }
 }
