@@ -9,10 +9,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.aero.apptareas.data.model.Tarea
 
@@ -37,7 +37,7 @@ fun ItemTarea(
                 Text(
                     text = tarea.titulo,
                     modifier = Modifier.padding(start = 8.dp),
-                    color = if (tarea.completada) Color.Gray else Color.Black
+                    color = if (tarea.completada) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface
                 )
             }
             IconButton(onClick = onDelete) {
