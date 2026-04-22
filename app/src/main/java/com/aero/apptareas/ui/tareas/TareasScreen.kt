@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aero.apptareas.ui.components.BotonPrimario
 import com.aero.apptareas.ui.components.CampoTexto
+import com.aero.apptareas.ui.components.EditarTareaDialog
 import com.aero.apptareas.ui.components.ListaTareas
 import com.aero.apptareas.ui.components.TituloApp
 
@@ -44,9 +45,19 @@ fun TareasScreen(viewModel: TareasViewModel = viewModel()) {
         ListaTareas(
             tareas = viewModel.tareas,
             onToggle = viewModel::toggleTarea,
-            onDelete = viewModel::eliminarTarea
-            )
+            onDelete = viewModel::eliminarTarea,
+            onEdit = viewModel::abrirEdicionTarea
+        )
 
+        viewModel.tareaEnEdicion?.let { tarea ->
+            EditarTareaDialog(
+                tarea = tarea,
+                textoEditado = viewModel.textoEdicion,
+                onTextoChange = viewModel::onTextoEdicionChange,
+                onConfirm = { viewModel.guardarEdicionTarea(viewModel.textoEdicion) },
+                onDismiss = viewModel::cerrarEdicionTarea
+            )
+        }
     }
 }
 
