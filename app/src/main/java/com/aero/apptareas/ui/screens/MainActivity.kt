@@ -1,4 +1,4 @@
-package com.aero.apptareas.ui.main
+package com.aero.apptareas.ui.screens
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
