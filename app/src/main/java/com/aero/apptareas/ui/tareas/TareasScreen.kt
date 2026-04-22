@@ -1,4 +1,4 @@
-package com.aero.apptareas.ui.screens
+package com.aero.apptareas.ui.tareas
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
