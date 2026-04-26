@@ -9,11 +9,14 @@ import androidx.lifecycle.viewModelScope
 import com.aero.apptareas.data.model.FiltroTarea
 import com.aero.apptareas.data.model.Tarea
 import com.aero.apptareas.data.repository.TareaRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalCoroutinesApi::class)
 
 class TareasViewModel(private val repository: TareaRepository) : ViewModel() {
 
@@ -24,6 +27,9 @@ class TareasViewModel(private val repository: TareaRepository) : ViewModel() {
         private set
 
     var textoEdicion by mutableStateOf("")
+        private set
+
+    var colorEdicion by mutableStateOf(0)
         private set
 
     var filtroActual by mutableStateOf(FiltroTarea.TODAS)
@@ -47,7 +53,8 @@ class TareasViewModel(private val repository: TareaRepository) : ViewModel() {
         if (texto.isNotBlank()) {
             val nuevaTarea = Tarea(
                 titulo = texto,
-                completada = false
+                completada = false,
+                colorIndex = 0
             )
             viewModelScope.launch {
                 repository.insertTarea(nuevaTarea)
@@ -71,21 +78,32 @@ class TareasViewModel(private val repository: TareaRepository) : ViewModel() {
     fun abrirEdicionTarea(tarea: Tarea) {
         tareaEnEdicion = tarea
         textoEdicion = tarea.titulo
+        colorEdicion = tarea.colorIndex
     }
 
     fun cerrarEdicionTarea() {
         tareaEnEdicion = null
         textoEdicion = ""
+        colorEdicion = 0
     }
 
     fun onTextoEdicionChange(nuevoTexto: String) {
         textoEdicion = nuevoTexto
     }
 
+    fun onColorEdicionChange(nuevoColorIndex: Int) {
+        colorEdicion = nuevoColorIndex
+    }
+
     fun guardarEdicionTarea(nuevoTitulo: String) {
         tareaEnEdicion?.let { tarea ->
             viewModelScope.launch {
-                repository.updateTarea(tarea.copy(titulo = nuevoTitulo))
+                repository.updateTarea(
+                    tarea.copy(
+                        titulo = nuevoTitulo,
+                        colorIndex = colorEdicion
+                    )
+                )
                 cerrarEdicionTarea()
             }
         }
