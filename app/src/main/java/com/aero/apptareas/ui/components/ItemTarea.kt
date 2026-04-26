@@ -14,8 +14,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.aero.apptareas.data.model.Tarea
+import com.aero.apptareas.ui.theme.TareaColors
 
 @Composable
 fun ItemTarea(
@@ -31,23 +33,43 @@ fun ItemTarea(
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row {
+            Row(
+                modifier = Modifier.weight(1f)
+            ) {
                 Checkbox(
                     checked = tarea.completada,
-                    onCheckedChange = { onToggle() }
+                    onCheckedChange = { onToggle() },
+                    colors = MaterialTheme.colorScheme.run {
+                        androidx.compose.material3.CheckboxDefaults.colors(
+                            checkedColor = Color.Gray,
+                            uncheckedColor = Color.Black,
+                            checkmarkColor = Color.White
+                        )
+                    }
                 )
                 Text(
                     text = tarea.titulo,
-                    modifier = Modifier.padding(start = 8.dp),
-                    color = if (tarea.completada) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .weight(1f),
+                    color = if (tarea.completada) Color.Gray else Color.Black,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
             Row {
-                IconButton(onClick = onEdit) {
-                    Icon(Icons.Default.Edit, contentDescription = "Editar")
+                IconButton(onClick = onEdit, modifier = Modifier.padding(0.dp)) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "Editar",
+                        tint = if (tarea.completada) Color.Gray else Color.Black
+                    )
                 }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                IconButton(onClick = onDelete, modifier = Modifier.padding(0.dp)) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Eliminar",
+                        tint = if (tarea.completada) Color.Gray else Color.Black
+                    )
                 }
             }
         }
