@@ -14,6 +14,12 @@ interface TareaDao {
     @Query("SELECT * FROM tareas ORDER BY id DESC")
     fun getAllTareas(): Flow<List<Tarea>>
 
+    @Query("SELECT * FROM tareas WHERE completada = 0 ORDER BY id DESC")
+    fun getTareasPendientes(): Flow<List<Tarea>>
+
+    @Query("SELECT * FROM tareas WHERE completada = 1 ORDER BY id DESC")
+    fun getTareasCompletadas(): Flow<List<Tarea>>
+
     @Query("SELECT * FROM tareas WHERE id = :id")
     suspend fun getTareaById(id: Int): Tarea?
 
