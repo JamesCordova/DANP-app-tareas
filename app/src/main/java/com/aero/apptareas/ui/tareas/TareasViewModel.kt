@@ -6,12 +6,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.aero.apptareas.data.model.FiltroTarea
 import com.aero.apptareas.data.model.Tarea
 import com.aero.apptareas.data.repository.TareaRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Collections.emptyList
 
 class TareasViewModel(private val repository: TareaRepository) : ViewModel() {
 
@@ -24,11 +26,18 @@ class TareasViewModel(private val repository: TareaRepository) : ViewModel() {
     var textoEdicion by mutableStateOf("")
         private set
 
-    val tareas = repository.allTareas.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    var filtroActual by mutableStateOf(FiltroTarea.TODAS)
+        private set
+
+    private val _filtroFlow = MutableStateFlow(FiltroTarea.TODAS)
+
+    val tareas = _filtroFlow
+        .flatMapLatest { filtro -> repository.getTareasPorFiltro(filtro) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     fun onTextoChange(nuevoTexto: String) {
         texto = nuevoTexto
@@ -80,6 +89,11 @@ class TareasViewModel(private val repository: TareaRepository) : ViewModel() {
                 cerrarEdicionTarea()
             }
         }
+    }
+
+    fun cambiarFiltro(nuevoFiltro: FiltroTarea) {
+        filtroActual = nuevoFiltro
+        _filtroFlow.value = nuevoFiltro
     }
 }
 
