@@ -22,11 +22,14 @@ import com.aero.apptareas.ui.theme.TareaColors
 @Composable
 fun ItemTarea(
     tarea: Tarea,
+    backgroundColor: Color = Color.White,
     onToggle: () -> Unit,
     onDelete: () -> Unit,
     onEdit: () -> Unit = {}
 ) {
-    TarjetaBase {
+    TarjetaBase(
+        backgroundColor = backgroundColor
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
