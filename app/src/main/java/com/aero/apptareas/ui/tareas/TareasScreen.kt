@@ -8,10 +8,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aero.apptareas.data.db.AppDatabase
+import com.aero.apptareas.data.repository.TareaRepository
 import com.aero.apptareas.ui.components.BotonPrimario
 import com.aero.apptareas.ui.components.CampoTexto
 import com.aero.apptareas.ui.components.EditarTareaDialog
@@ -19,7 +25,9 @@ import com.aero.apptareas.ui.components.ListaTareas
 import com.aero.apptareas.ui.components.TituloApp
 
 @Composable
-fun TareasScreen(viewModel: TareasViewModel = viewModel()) {
+fun TareasScreen(viewModel: TareasViewModel = viewModel(factory = getTareasViewModelFactory())) {
+    val tareas by viewModel.tareas.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,7 +51,7 @@ fun TareasScreen(viewModel: TareasViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(16.dp))
 
         ListaTareas(
-            tareas = viewModel.tareas,
+            tareas = tareas,
             onToggle = viewModel::toggleTarea,
             onDelete = viewModel::eliminarTarea,
             onEdit = viewModel::abrirEdicionTarea
@@ -58,6 +66,16 @@ fun TareasScreen(viewModel: TareasViewModel = viewModel()) {
                 onDismiss = viewModel::cerrarEdicionTarea
             )
         }
+    }
+}
+
+@Composable
+private fun getTareasViewModelFactory(): TareasViewModelFactory {
+    val context = LocalContext.current
+    return remember {
+        val database = AppDatabase.getInstance(context)
+        val repository = TareaRepository(database.tareaDao())
+        TareasViewModelFactory(repository)
     }
 }
 
