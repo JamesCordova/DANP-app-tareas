@@ -4,11 +4,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.aero.apptareas.data.model.Tarea
+import com.aero.apptareas.data.repository.TareaRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import java.util.Collections.emptyList
 
-class TareasViewModel : ViewModel() {
-    var tareas by mutableStateOf(listOf<Tarea>())
-        private set
+class TareasViewModel(private val repository: TareaRepository) : ViewModel() {
 
     var texto by mutableStateOf("")
         private set
@@ -19,7 +24,11 @@ class TareasViewModel : ViewModel() {
     var textoEdicion by mutableStateOf("")
         private set
 
-    private var contadorId = 0
+    val tareas = repository.allTareas.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     fun onTextoChange(nuevoTexto: String) {
         texto = nuevoTexto
@@ -28,28 +37,25 @@ class TareasViewModel : ViewModel() {
     fun agregarTarea() {
         if (texto.isNotBlank()) {
             val nuevaTarea = Tarea(
-                id = contadorId++,
                 titulo = texto,
                 completada = false
             )
-            tareas = tareas + nuevaTarea
+            viewModelScope.launch {
+                repository.insertTarea(nuevaTarea)
+            }
             texto = ""
         }
     }
 
     fun toggleTarea(tarea: Tarea) {
-        tareas = tareas.map { itTarea: Tarea ->
-            if (itTarea.id == tarea.id) {
-                itTarea.copy(completada = !itTarea.completada)
-            } else {
-                itTarea
-            }
+        viewModelScope.launch {
+            repository.updateTarea(tarea.copy(completada = !tarea.completada))
         }
     }
 
     fun eliminarTarea(tarea: Tarea) {
-        tareas = tareas.filter { itTarea: Tarea ->
-            itTarea.id != tarea.id
+        viewModelScope.launch {
+            repository.deleteTarea(tarea)
         }
     }
 
@@ -69,14 +75,20 @@ class TareasViewModel : ViewModel() {
 
     fun guardarEdicionTarea(nuevoTitulo: String) {
         tareaEnEdicion?.let { tarea ->
-            tareas = tareas.map { itTarea: Tarea ->
-                if (itTarea.id == tarea.id) {
-                    itTarea.copy(titulo = nuevoTitulo)
-                } else {
-                    itTarea
-                }
+            viewModelScope.launch {
+                repository.updateTarea(tarea.copy(titulo = nuevoTitulo))
+                cerrarEdicionTarea()
             }
-            cerrarEdicionTarea()
         }
+    }
+}
+
+class TareasViewModelFactory(private val repository: TareaRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(TareasViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return TareasViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
