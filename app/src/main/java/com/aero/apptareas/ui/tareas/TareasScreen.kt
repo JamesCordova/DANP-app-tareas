@@ -21,6 +21,7 @@ import com.aero.apptareas.data.repository.TareaRepository
 import com.aero.apptareas.ui.components.BotonPrimario
 import com.aero.apptareas.ui.components.CampoTexto
 import com.aero.apptareas.ui.components.EditarTareaDialog
+import com.aero.apptareas.ui.components.FiltroEstados
 import com.aero.apptareas.ui.components.ListaTareas
 import com.aero.apptareas.ui.components.TituloApp
 
@@ -47,6 +48,13 @@ fun TareasScreen(viewModel: TareasViewModel = viewModel(factory = getTareasViewM
         Spacer(modifier = Modifier.height(8.dp))
 
         BotonPrimario("Agregar Tarea") { viewModel.agregarTarea() }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        FiltroEstados(
+            filtroActual = viewModel.filtroActual,
+            onFiltroChange = viewModel::cambiarFiltro
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
